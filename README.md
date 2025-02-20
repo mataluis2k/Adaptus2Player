@@ -1,4 +1,3 @@
-```markdown
 # Adaptus2Player
 
 **Adaptus2Player** is an easy-to-use, highly customizable Video.js player that simplifies adding robust video functionality to your website. It includes features like hero overlay for inline mobile playback, customizable call-to-action (CTA) display, redirect handling upon video completion, granular control over player features (volume, seek, controls), optional playback tracking, and a configurable fullscreen change callback.
