@@ -227,11 +227,11 @@
     loadCSS('https://vjs.zencdn.net/7.20.3/video-js.css');
   
     // Expose the initVideoPlayer function globally.
-    window.initVideoPlayer = initVideoPlayer;
+    window.Adaptus2Player = initVideoPlayer;
   
     // Example auto-initialization (commented out):
     /*
-    initVideoPlayer({
+    Adaptus2Player({
       targetDiv: '#videoContainer',
       videoSrc: '/myvideo.mp4',
       videoDuration: 300,

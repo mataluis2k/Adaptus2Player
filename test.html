@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adaptus2Player Test - MP4 Stream</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .player-wrapper {
+      margin-bottom: 20px;
+      border: 2px dashed #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      min-height: 400px;
+    }
+    
+    .info-panel {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 20px;
+    }
+    
+    .status {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    
+    .status.loading {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+    
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .url-display {
+      background: #e9ecef;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      word-break: break-all;
+      margin: 10px 0;
+    }
+    
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    
+    button:hover {
+      background: #0056b3;
+    }
+    
+    button:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+  </style>
+  <script src="./dist/adaptus2-player.umd.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Adaptus2Player Test - MP4 Stream</h1>
+    
+    <div class="info-panel">
+      <h3>Stream Information</h3>
+      <div><strong>Stream URL:</strong></div>
+      <div class="url-display">http://localhost:3000/stream/079233a0-8af1-7ea1-e83c-0e5f904e8deb</div>
+      <div><strong>Stream Type:</strong> MP4</div>
+      <div><strong>Expected Format:</strong> Video stream served over HTTP</div>
+    </div>
+    
+    <div class="status loading" id="status">
+      Initializing player...
+    </div>
+    
+    <div class="player-wrapper">
+      <div id="player"></div>
+    </div>
+    
+    <div class="info-panel">
+      <h3>Test Controls</h3>
+      <button onclick="initializePlayer()" id="initBtn">Initialize Player</button>
+      <button onclick="testStreamUrl()" id="testBtn">Test Stream URL</button>
+      <button onclick="clearPlayer()" id="clearBtn">Clear Player</button>
+    </div>
+    
+    <div class="info-panel" id="debugInfo">
+      <h3>Debug Information</h3>
+      <div id="debugOutput">Player not initialized yet.</div>
+    </div>
+  </div>
+
+  <script>
+    let playerInstance = null;
+    const streamUrl = 'http://localhost:3000/stream/079233a0-8af1-7ea1-e83c-0e5f904e8deb';
+    
+    function updateStatus(message, type = 'loading') {
+      const statusEl = document.getElementById('status');
+      statusEl.textContent = message;
+      statusEl.className = `status ${type}`;
+    }
+    
+    function updateDebugInfo(info) {
+      const debugEl = document.getElementById('debugOutput');
+      debugEl.innerHTML = info;
+    }
+    
+    function initializePlayer() {
+      try {
+        updateStatus('Initializing Adaptus2Player...', 'loading');
+        updateDebugInfo('Attempting to initialize player...');
+        
+        // Clear any existing player
+        document.getElementById('player').innerHTML = '';
+        
+        // Check if Adaptus2Player is available
+        if (typeof Adaptus2Player === 'undefined') {
+          throw new Error('Adaptus2Player is not loaded');
+        }
+        
+        // Initialize the player
+        playerInstance = Adaptus2Player({ 
+          targetDiv: '#player', 
+          videoSrc: streamUrl,
+          // Add any additional options that might be supported
+          controls: true,
+          autoplay: false,
+          debug: true
+        });
+        
+        updateStatus('Player initialized successfully!', 'success');
+        updateDebugInfo(`
+          <strong>Player Status:</strong> Initialized<br>
+          <strong>Target Div:</strong> #player<br>
+          <strong>Video Source:</strong> ${streamUrl}<br>
+          <strong>Timestamp:</strong> ${new Date().toLocaleTimeString()}
+        `);
+        
+        // Enable test button
+        document.getElementById('testBtn').disabled = false;
+        
+      } catch (error) {
+        updateStatus(`Error: ${error.message}`, 'error');
+        updateDebugInfo(`
+          <strong>Error:</strong> ${error.message}<br>
+          <strong>Stack:</strong> ${error.stack || 'No stack trace available'}<br>
+          <strong>Timestamp:</strong> ${new Date().toLocaleTimeString()}
+        `);
+        console.error('Player initialization error:', error);
+      }
+    }
+    
+    function testStreamUrl() {
+      updateStatus('Testing stream URL accessibility...', 'loading');
+      
+      fetch(streamUrl, { method: 'HEAD' })
+        .then(response => {
+          if (response.ok) {
+            updateStatus('Stream URL is accessible!', 'success');
+            updateDebugInfo(`
+              <strong>Stream Test:</strong> Success<br>
+              <strong>Status:</strong> ${response.status} ${response.statusText}<br>
+              <strong>Content-Type:</strong> ${response.headers.get('Content-Type') || 'Not specified'}<br>
+              <strong>Content-Length:</strong> ${response.headers.get('Content-Length') || 'Not specified'}<br>
+              <strong>Timestamp:</strong> ${new Date().toLocaleTimeString()}
+            `);
+          } else {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+        })
+        .catch(error => {
+          updateStatus(`Stream URL test failed: ${error.message}`, 'error');
+          updateDebugInfo(`
+            <strong>Stream Test:</strong> Failed<br>
+            <strong>Error:</strong> ${error.message}<br>
+            <strong>Possible Issues:</strong><br>
+            - Server is not running on localhost:3000<br>
+            - Stream ID is incorrect<br>
+            - CORS policy blocking the request<br>
+            - Network connectivity issues<br>
+            <strong>Timestamp:</strong> ${new Date().toLocaleTimeString()}
+          `);
+        });
+    }
+    
+    function clearPlayer() {
+      document.getElementById('player').innerHTML = '';
+      playerInstance = null;
+      updateStatus('Player cleared', 'loading');
+      updateDebugInfo('Player instance cleared.');
+      document.getElementById('testBtn').disabled = true;
+    }
+    
+    // Auto-initialize on page load
+    window.addEventListener('load', function() {
+      updateStatus('Page loaded, ready to initialize player', 'loading');
+      
+      // Check if the script is loaded
+      if (typeof Adaptus2Player !== 'undefined') {
+        updateDebugInfo('Adaptus2Player script loaded successfully. Click "Initialize Player" to start.');
+      } else {
+        updateStatus('Error: Adaptus2Player script not loaded', 'error');
+        updateDebugInfo('Adaptus2Player script failed to load. Check if ./dist/adaptus2-player.umd.js exists.');
+      }
+    });
+    
+    // Error handling for unhandled errors
+    window.addEventListener('error', function(event) {
+      console.error('Global error:', event.error);
+      updateStatus(`Unexpected error: ${event.error?.message || 'Unknown error'}`, 'error');
+    });
+  </script>
+</body>
+</html>
