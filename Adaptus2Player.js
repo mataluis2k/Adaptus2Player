@@ -9,7 +9,7 @@
  * Licensed under the MIT License. You may obtain a copy of the License at:
  * http://opensource.org/licenses/MIT
  *
- * Author: Luis B. Mata <[your.email@example.com]>
+ * Author: Luis B. Mata <mataluis2k@gmail.com>
  * Date: [2025-02-14]
  *
  * Description:

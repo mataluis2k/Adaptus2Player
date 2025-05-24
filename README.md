@@ -105,7 +105,7 @@ Adaptus2Player is released under the [MIT License](http://opensource.org/license
 ## Author
 
 Luis B. Mata  
-Email: [your.email@example.com]
+
 
 ---
 
